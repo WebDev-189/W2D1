@@ -1,143 +1,121 @@
 class Human {
-	constructor(name, age = 20) {
-		// const age = age
+	constructor(name, age) {
+		this.name = name
+		if (typeof age !== "number" || age < 0) {
+			throw Error(`${age} is not a valid value for a Human age.`)
+		}
 		this.age = age
 		this.hasShoes = true
-		this.name = name
 	}
 
-	levelUp() {
-		this.age += 1
-	}
-	toggleShoes() {
-		this.hasShoes = !this.hasShoes
-	}
-	changeName(newName) {
-		this.name = newName
-		console.log(`My name is now ${this.name}`)
-	}
-}
-
-const susan = new Human("Susan", 27)
-
-// susan.levelUp()
-// console.log(susan.age)
-// susan.toggleShoes()
-
-// susan.changeName("Alice")
-// console.log(susan)
-
-class Student extends Human {
-	constructor(name, age, studying) {
-		// super allow us to access the class we are inheriting from
-		// It will execute the constructor from the parent class
-		super(name, age)
-		this.studying = studying
-		const randomInteger = Math.floor(Math.random() * 5) + 5
-		this.skill = randomInteger
-	}
-
-	levelUp() {
-		const integerBetweenOneAndTwo = Math.floor(Math.random() * 2) + 1
-		this.skill += integerBetweenOneAndTwo
-		console.log(
-			`Added ${integerBetweenOneAndTwo} points to my skills: ${this.skill}`
-		)
+	talk(sentence) {
+		console.log(`${this.name} says: ${sentence}`)
 	}
 
 	growOlder() {
-		super.levelUp()
-		this.say(`It's my birthday, i am now ${this.age}`)
-	}
-	say(sentence) {
-		console.log(`${this.name}: ${sentence}`)
+		this.age++
 	}
 
-	takeTest() {
-		return this.skill
+	changeName(newName) {
+		console.log(`old name: ${this.name}`)
+		this.name = newName
+		console.log(`new name: ${this.name}`)
+	}
+
+	sayMyName() {
+		this.talk(`I am the one who's ${this.name}!`)
 	}
 }
 
-const bob = new Student("Bob", 38, "Web development")
-const alice = new Student("Alice", 28, "Web development")
-const john = new Student("John", 46, "Web development")
-const foo = new Student("Foo", 67, "Web development")
-// const arrayOfStudents = [bob, alice, john, foo]
+const bob = new Human("Bob", 20)
+bob.talk("I am bob!")
+bob.changeName("Sam")
+bob.sayMyName()
 
-/**
- * Teacher class
- */
+class Student extends Human {
+	constructor(name, age, subject) {
+		super(name, age)
+		// this.name = name
+		// this.age = age
+		this.subject = subject
+		this.skillLevel = Math.floor(Math.random() * 4)
+	}
+
+	trains() {
+		this.skillLevel += Math.floor(Math.random() * 2) + 1
+	}
+
+	growOlder() {
+		super.growOlder()
+		this.talk(`It was my birtday, i'm now ${this.age} years old`)
+		this.talk(this.skillLevel)
+		this.trains()
+		this.talk(this.skillLevel)
+		this.trains()
+		this.talk(this.skillLevel)
+	}
+}
+
+const totoro = new Student("Totoro", 28, "Web Dev")
+const bobo = new Student("Boboro", 19, "Web Dev")
+const chalio = new Student("Chalio", 32, "Web Dev")
+
+console.log(`Totoro starting skill level: ${totoro.skillLevel}`)
+
+// totoro.growOlder()
 
 class Teacher extends Human {
-	checkTest(student) {
-		// console.log(student)
-		/**
-		 * student.skill or student.takeTest()
-		 * gives us the same value
-		 */
+	constructor(name, age) {
+		super(name, age)
+		delete this.hasShoes
+	}
 
-		if (student.skill >= 10) {
-			console.log(`${student.name} passed the test!!`)
+	skillCheck(student) {
+		if (student.skillLevel >= 10) {
+			this.talk(`Congratulation ${student.name}!`)
 		} else {
-			console.log(`${student.name} is going to train 💪`)
-			student.levelUp()
+			this.talk("Training time!")
+			student.trains()
+			student.talk(`My new skill level is: ${student.skillLevel}`)
+			this.skillCheck(student)
 		}
 	}
 }
 
-const webTeacher = new Teacher("MDN", 40)
+// function sum (a, b) {}
+
+const mdn = new Teacher("MDN", Infinity)
 
 class Classroom {
 	constructor() {
 		this.students = []
 		this.teacher = null
 	}
-	addStudent(oneStudent) {
-		this.students.push(oneStudent)
+
+	addStudent(student) {
+		this.students.push(student)
 	}
 	addTeacher(teacher) {
 		this.teacher = teacher
 	}
+
 	testTime() {
-		console.log("=== New test ===")
-		this.students.forEach((student) => {
-			this.teacher.checkTest(student)
-		})
+		for (const student of this.students) {
+			this.teacher.skillCheck(student)
+		}
 	}
 }
 
-const webClass = new Classroom()
-// arrayOfStudents.forEach(student => webClass.addStudent(student))
-webClass.addStudent(bob)
-webClass.addStudent(alice)
-webClass.addStudent(john)
-webClass.addStudent(foo)
-webClass.addTeacher(webTeacher)
+console.log("=========== CLASSROOM TIME ============")
 
-// console.log(webClass)
-// webClass.teacher.checkTest(webClass.students[3])
-webClass.testTime()
-webClass.testTime()
-webClass.testTime()
-webClass.testTime()
-webClass.testTime()
+const myClassRoom = new Classroom()
+myClassRoom.addStudent(totoro)
+myClassRoom.addStudent(bobo)
+myClassRoom.addStudent(chalio)
+myClassRoom.addTeacher(mdn)
 
-console.log(webClass instanceof Classroom)
-console.log(webTeacher instanceof Human)
-console.log(webTeacher instanceof Teacher)
-console.log(webTeacher instanceof Student)
+myClassRoom.testTime()
 
-// console.log(bob)
-// bob.growOlder()
-// bob.growOlder()
-// bob.growOlder()
-// bob.growOlder()
-// bob.levelUp()
-// bob.levelUp()
-// bob.levelUp()
-// bob.levelUp()
-// bob.levelUp()
-// bob.levelUp()
+console.log(mdn)
 
-// bob.say("I trained a lot!")
-// console.log(bob)
+const anotherStudent = new Student("studentName", -6)
